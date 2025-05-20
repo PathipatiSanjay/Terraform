@@ -25,21 +25,17 @@ resource "aws_internet_gateway" "my_igw" {
 
 }
 
+
 resource "aws_route_table" "my_rt" {
     vpc_id = aws_vpc.my_vpc.id
     route = {
         cidr_block = "0.0.0.0/0"
-        aws_internet_gateway = aws_internet_gateway.my_igw.id
-
-        tags = {
-            Name = "my_route"
-        }
+        gateway_id = aws_internet_gateway.my_igw.id    
     }
   
 }
 
 resource "aws_route_table_association" "my_rt_asc" {
-    subnet_id = aws_subnet.my_subnet.id
-    route_table_id = aws_route_table.my_rt.id        
-  
+    route_table_id = aws_route_table.my_rt.id
+    subnet_id = aws_subnet.my_subnet.id      
 }
