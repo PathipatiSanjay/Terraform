@@ -118,12 +118,13 @@ resource "aws_instance" "my_instance" {
     ami = "ami-0f9de6e2d2f067fca"
     instance_type = "t2.micro"
     subnet_id = aws_subnet.my_subnet.id
-    security_groups = aws_security_group.my_sg.id
+    security_groups = [aws_security_group.my_sg.id]
     key_name = aws_key_pair.my_ec2_key_pair.key_name
-    tags ={
-        Name = "my_instance"
 
+    tags = {
+      Name = "my-instance"
     }
+
     
     associate_public_ip_address = "true"
   
