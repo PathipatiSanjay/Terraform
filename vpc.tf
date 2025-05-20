@@ -39,3 +39,71 @@ resource "aws_route_table_association" "my_rt_asc" {
     route_table_id = aws_route_table.my_rt.id
     subnet_id = aws_subnet.my_subnet.id      
 }
+
+resource "aws_network_acl" "my-nacl" {
+    vpc_id = aws_vpc.my_vpc.id
+
+    egress {
+        protocol = "tcp"
+        rule_no  =  100
+        action = "allow"
+        cidr_block = "0.0.0.0/0"
+        from_port =  0
+        to_port = 65535
+    }
+
+    ingress {
+        protocol = "tcp"
+        rule_no = 100
+        action = "allow"
+        cidr_block = "0.0.0.0/0"
+        from_port = 0
+        to_port = 65535
+    }
+
+    tags = {
+      Name = "my_nacl"
+
+    }
+  
+}
+
+
+resource "aws_network_acl_association" "my_nacl_asc" {
+    network_acl_id = aws_network_acl.my-nacl.id
+    subnet_id = aws_subnet.my_subnet.id  
+}
+
+resource "aws_security_group" "my_sg" {
+    name = "my_sg"
+    description = "Allowing ssh,http"
+    vpc_id = aws_vpc.my_vpc.id
+
+    tags = {
+      Name = "my-sg"
+    }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "my_sg_ssh_rule" {
+    security_group_id = aws_security_group.my_sg.id
+    cidr_ipv4 = "0.0.0.0/0"
+    from_port = 22
+    ip_protocol = "tcp"
+    to_port = 22  
+}
+
+resource "aws_vpc_security_group_ingress_rule" "my_sg_http_rule" {
+    security_group_id = aws_security_group.my_sg.id
+    cidr_ipv4 = "0.0.0.0/0"
+    from_port = 80
+    ip_protocol = "tcp"
+    to_port = 80 
+}
+
+resource "aws_vpc_security_group_egress_rule" "my_sg_outbound_rule" {
+    security_group_id = aws_security_group.my_sg.id
+    cidr_ipv4 = "0.0.0.0/0"
+    from_port = 0
+    ip_protocol = "tcp"
+    to_port = 65535  
+}
