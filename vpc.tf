@@ -107,3 +107,24 @@ resource "aws_vpc_security_group_egress_rule" "my_sg_outbound_rule" {
     ip_protocol = "tcp"
     to_port = 65535  
 }
+
+
+resource "aws_key_pair" "my_ec2_key_pair" {
+  key_name   = "my-ec2-instance-key"
+  public_key = file("~/.ssh/my-ec2-key.pub") # Path on the Terraform server
+}
+
+resource "aws_instance" "my_instance" {
+    ami = "ami-0f9de6e2d2f067fca"
+    instance_type = "t2.micro"
+    subnet_id = aws_subnet.my_subnet.id
+    security_groups = aws_security_group.my_sg.id
+    key_name = aws_key_pair.my_ec2_key_pair.key_name
+    tags ={
+        Name = "my_instance"
+
+    }
+    
+    associate_public_ip_address = "true"
+  
+}
